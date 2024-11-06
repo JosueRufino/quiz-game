@@ -3,8 +3,14 @@
     { "id": 1, "question": "Quem tu es", "options": [ "baixinho", "alto"], "answser": "baixinho"},
     { "id": 1, "question": "Onde estudas", "options": [ "isptec", "oscar", "cangonjo"], "answser": "cangonjo"}
   ],
-  "users":[
-    { "id": 1, "username": "josue",  "password": "josue",  "type": "normal"},
-    { "id": 1, "username": "josue",  "password": "josue",  "type": "user"}
+  "players":[
+    { "id": 1, "username": "josue",  "password": "josue"},
+    { "id": 1, "username": "josue",  "password": "josue"}
+  ],
+
+  "admins":[
+    {
+      "id": 1, "username": "jrufino", "password": "jrufino"
+    }
   ]
 }
