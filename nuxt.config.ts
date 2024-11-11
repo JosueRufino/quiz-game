@@ -22,18 +22,13 @@ export default defineNuxtConfig({
       meta: [{ charset: "utf-8" }],
     },
   },
-  modules: ["@nuxtjs/i18n", '@pinia/nuxt'],
+  modules: ["@nuxtjs/i18n", '@pinia/nuxt', "nuxt-echarts"],
+  echarts: {
+    charts: ['BarChart'],
+    components: ['DatasetComponent', 'GridComponent', 'TooltipComponent'],
+  },
   css: [
     "bootstrap/dist/css/bootstrap.min.css",
     "bootstrap-icons/font/bootstrap-icons.css",
   ],
-  vite: {
-    css: {
-      preprocessorOptions: {
-        scss: {
-          additionalData: `@import "@/assets/styles/custom-bootstrap.scss";`,
-        },
-      },
-    },
-  },
 });

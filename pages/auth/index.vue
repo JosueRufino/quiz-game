@@ -38,29 +38,40 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useAuthStore } from '~/store/auth' // Importando a store
-import { useRouter } from 'vue-router' // Importando o roteador para redirecionamento
+import { useRouter } from 'vue-router'
+import { useFetch } from '#app' // Para fazer requisições no Nuxt
 
 definePageMeta({
   layout: "auth"
 })
 
-const authStore = useAuthStore() // Acessando a store de autenticação
-const router = useRouter() // Inicializando o roteador para redirecionamento
+const router = useRouter()
 
-const username = ref('') // Variável para o nome de usuário
-const password = ref('') // Variável para a senha
+// Variáveis de estado para nome de usuário e senha
+const username = ref('')
+const password = ref('')
 
-// Função para lidar com o envio do formulário de login
+// Função para lidar com o login diretamente na página
 const handleLogin = async () => {
   try {
-    const response = await authStore.login(username.value, password.value) // Recebendo a resposta da API
+    // Faz a requisição para a API
+    const { data, error } = await useFetch(`http://localhost:4000/admins?username=${username.value}`)
 
-    if (response.success) {
-      // Se o login for bem-sucedido, redireciona para a página de dashboard
-      router.push('/dashboard')
+    if (error.value) {
+      alert('Erro ao tentar fazer login')
+      return
+    }
+
+    const user = data.value?.find((user) => user.username === username.value)
+
+    if (user && user.password === password.value) {
+      // Armazenar os dados do usuário e token localmente
+      localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('token', 'fake-jwt-token') // Token simulado
+
+      // Redirecionar para o dashboard
+      router.push('/admin')
     } else {
-      // Caso contrário, você pode mostrar uma mensagem de erro
       alert('Nome de usuário ou senha incorretos!')
     }
   } catch (error) {
@@ -89,14 +100,14 @@ const handleLogin = async () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.6); /* Fundo preto semi-transparente */
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 0;
 }
 
 .card {
   position: relative;
   z-index: 1;
-  background-color: rgba(255, 255, 255, 0.75); /* Cor de fundo semitransparente */
+  background-color: rgba(255, 255, 255, 0.75);
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   height: 50vh;

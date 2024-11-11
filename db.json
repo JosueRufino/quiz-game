@@ -1,16 +1,128 @@
 {
   "quiz": [
-    { "id": 1, "question": "Quem tu es", "options": [ "baixinho", "alto"], "answser": "baixinho"},
-    { "id": 1, "question": "Onde estudas", "options": [ "isptec", "oscar", "cangonjo"], "answser": "cangonjo"}
-  ],
-  "players":[
-    { "id": 1, "username": "josue",  "password": "josue"},
-    { "id": 1, "username": "josue",  "password": "josue"}
-  ],
-
-  "admins":[
     {
-      "id": 1, "username": "jrufino", "password": "jrufino"
+      "id": "1",
+      "name": "Java Script",
+      "description": "Quiz de perguntas sobre a linguagem Java Script",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Quem tu es",
+          "options": [
+            {
+              "id": 1,
+              "response": "baixinho"
+            },
+            {
+              "id": 2,
+              "response": "baixinho"
+            },
+            {
+              "id": 3,
+              "response": "baixinho"
+            },
+            {
+              "id": 4,
+              "response": "baixinho"
+            }
+          ],
+          "answerId": 4
+        },
+        {
+          "question": "dddd",
+          "options": [
+            {
+              "id": 1,
+              "response": "ss"
+            },
+            {
+              "id": 2,
+              "response": "ss"
+            },
+            {
+              "id": 3,
+              "response": "ss"
+            },
+            {
+              "id": 4,
+              "response": "ss"
+            }
+          ],
+          "answerId": 2
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Java",
+      "description": "Quiz de perguntas sobre a linguagem Java Script",
+      "questions": [
+        {
+          "id": 1,
+          "question": "Quem tu es",
+          "options": [
+            {
+              "id": 1,
+              "response": "baixinho"
+            },
+            {
+              "id": 2,
+              "response": "baixinho"
+            },
+            {
+              "id": 3,
+              "response": "baixinho"
+            },
+            {
+              "id": 4,
+              "response": "baixinho"
+            }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 2,
+          "question": "Quem tu es",
+          "options": [
+            {
+              "id": 1,
+              "response": "baixinho"
+            },
+            {
+              "id": 2,
+              "response": "baixinho"
+            },
+            {
+              "id": 3,
+              "response": "baixinho"
+            },
+            {
+              "id": 4,
+              "response": "baixinho"
+            }
+          ],
+          "answerId": 1
+        }
+      ]
+    }
+  ],
+  "players": [
+    {
+      "id": "1",
+      "username": "josue",
+      "password": "josue"
+    },
+    {
+      "id": "2",
+      "username": "maria",
+      "password": "maria"
+    }
+  ],
+  "admins": [
+    {
+      "id": "1",
+      "username": "jrufino",
+      "password": "jrufino"
     }
   ]
 }

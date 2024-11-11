@@ -19,10 +19,12 @@
     "bootstrap-icons": "^1.11.3",
     "json-server": "^1.0.0-beta.3",
     "nuxt": "^3.13.2",
+    "nuxt-echarts": "^0.2.4",
     "pinia": "^2.2.6",
     "pinia-plugin-persistedstate": "^4.1.2",
     "quasar": "^2.17.1",
     "sass": "^1.80.6",
+    "smooth-scrollbar": "^8.8.4",
     "vue": "^3.5.12",
     "vue-router": "latest"
   },
