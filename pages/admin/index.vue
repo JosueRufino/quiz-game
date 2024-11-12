@@ -1,6 +1,7 @@
 <template>
-  <div><Card />
-  <ChartBar/>
+  <div class="p-3">
+    <h1>Bem vindo ao seu painel administrativo</h1>
+    <Card />
   </div>
 </template>
 
@@ -8,6 +9,8 @@
 definePageMeta({
   layout: "admin",
 });
+
+
 </script>
 
 <style scoped>

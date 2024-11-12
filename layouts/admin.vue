@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar" style="color: #fff; background: #000">
+    <nav class="sidebar" id="sidebar" style="color: #fff; background: #000"    v-if="!isSidebarOpen">
       <div
         class="sidebar-header d-flex align-items-center"
         style="background: #1a1b1b; color: #ffffff"
@@ -53,7 +53,7 @@
             class="w-100 h-100 d-flex justify-content-between align-items-center"
           >
             <div class="d-flex">
-              <button class="btn btn-outline-light btn-md" id="sidebarCollapse">
+              <button class="btn btn-outline-light btn-md" id="sidebarCollapse"  @click="toggleSidebar">
                 <i class="bi bi-list"></i>
               </button>
             </div>
@@ -81,6 +81,12 @@ const sidebarLinks = ref([
 const redirect = (url) => {
   router.push(url);
 };
+
+
+const isSidebarOpen = ref(false);
+function toggleSidebar() {
+  isSidebarOpen.value = !isSidebarOpen.value;
+}
 </script>
 
 <style scoped>

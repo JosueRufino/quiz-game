@@ -7,7 +7,7 @@
             <h4
               class="heading heading5 hind-font medium-font-weight c-dashboardInfo__title"
             >
-              Portfolio Balance<svg
+              Total de quizzes<svg
                 class="MuiSvgIcon-root-19"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -21,7 +21,7 @@
               </svg>
             </h4>
             <span class="hind-font caption-12 c-dashboardInfo__count"
-              >€10,500</span
+              >{{quizes?.length}}</span
             >
           </div>
         </div>
@@ -30,7 +30,7 @@
             <h4
               class="heading heading5 hind-font medium-font-weight c-dashboardInfo__title"
             >
-              Rental income<svg
+              Total de usuários<svg
                 class="MuiSvgIcon-root-19"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -43,9 +43,7 @@
                 ></path>
               </svg>
             </h4>
-            <span class="hind-font caption-12 c-dashboardInfo__count">€500</span
-            ><span class="hind-font caption-12 c-dashboardInfo__subInfo"
-              >Last month: €30</span
+            <span class="hind-font caption-12 c-dashboardInfo__count">{{ players?.length }}</span
             >
           </div>
         </div>
@@ -54,30 +52,7 @@
             <h4
               class="heading heading5 hind-font medium-font-weight c-dashboardInfo__title"
             >
-              Available funds<svg
-                class="MuiSvgIcon-root-19"
-                focusable="false"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                role="presentation"
-              >
-                <path fill="none" d="M0 0h24v24H0z"></path>
-                <path
-                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
-                ></path>
-              </svg>
-            </h4>
-            <span class="hind-font caption-12 c-dashboardInfo__count"
-              >€5000</span
-            >
-          </div>
-        </div>
-        <div class="c-dashboardInfo col-lg-3 col-md-6">
-          <div class="wrap">
-            <h4
-              class="heading heading5 hind-font medium-font-weight c-dashboardInfo__title"
-            >
-              Rental return<svg
+              Total de administradores<svg
                 class="MuiSvgIcon-root-19"
                 focusable="false"
                 viewBox="0 0 24 24"
@@ -91,7 +66,30 @@
               </svg>
             </h4>
             <span class="hind-font caption-12 c-dashboardInfo__count"
-              >6,40%</span
+              >{{ admins?.length }}</span
+            >
+          </div>
+        </div>
+        <div class="c-dashboardInfo col-lg-3 col-md-6">
+          <div class="wrap">
+            <h4
+              class="heading heading5 hind-font medium-font-weight c-dashboardInfo__title"
+            >
+              Quiz clássico<svg
+                class="MuiSvgIcon-root-19"
+                focusable="false"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                role="presentation"
+              >
+                <path fill="none" d="M0 0h24v24H0z"></path>
+                <path
+                  d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"
+                ></path>
+              </svg>
+            </h4>
+            <span class="hind-font caption-12 c-dashboardInfo__count"
+              >1</span
             >
           </div>
         </div>
@@ -99,6 +97,11 @@
     </div>
   </div>
 </template>
+<script setup>
+const { data: quizes, refresh } = await useFetch(`http://localhost:4000/quiz`);
+const { data: players, refresh1 } = await useFetch(`http://localhost:4000/players`);
+const { data: admins, refresh2 } = await useFetch(`http://localhost:4000/admins`);
+</script>
 <style scoped>
 .c-dashboardInfo {
   margin-bottom: 15px;

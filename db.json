@@ -2,106 +2,235 @@
   "quiz": [
     {
       "id": "1",
-      "name": "Java Script",
-      "description": "Quiz de perguntas sobre a linguagem Java Script",
+      "name": "JavaScript",
+      "description": "Quiz sobre conceitos básicos da linguagem JavaScript",
       "questions": [
         {
           "id": 1,
-          "question": "Quem tu es",
+          "question": "Qual das seguintes opções não é um tipo de dado primitivo em JavaScript?",
           "options": [
-            {
-              "id": 1,
-              "response": "baixinho"
-            },
-            {
-              "id": 2,
-              "response": "baixinho"
-            },
-            {
-              "id": 3,
-              "response": "baixinho"
-            },
-            {
-              "id": 4,
-              "response": "baixinho"
-            }
+            { "id": 1, "response": "String" },
+            { "id": 2, "response": "Number" },
+            { "id": 3, "response": "Object" },
+            { "id": 4, "response": "Boolean" }
           ],
-          "answerId": 4
+          "answerId": 3
         },
         {
-          "question": "dddd",
+          "id": 2,
+          "question": "Qual palavra-chave é usada para declarar uma variável de escopo de bloco?",
           "options": [
-            {
-              "id": 1,
-              "response": "ss"
-            },
-            {
-              "id": 2,
-              "response": "ss"
-            },
-            {
-              "id": 3,
-              "response": "ss"
-            },
-            {
-              "id": 4,
-              "response": "ss"
-            }
+            { "id": 1, "response": "var" },
+            { "id": 2, "response": "let" },
+            { "id": 3, "response": "const" },
+            { "id": 4, "response": "scope" }
           ],
           "answerId": 2
+        },
+        {
+          "id": 3,
+          "question": "Qual método é usado para adicionar um item ao final de um array em JavaScript?",
+          "options": [
+            { "id": 1, "response": "push()" },
+            { "id": 2, "response": "pop()" },
+            { "id": 3, "response": "shift()" },
+            { "id": 4, "response": "unshift()" }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 4,
+          "question": "Qual operador é usado para comparar valor e tipo em JavaScript?",
+          "options": [
+            { "id": 1, "response": "==" },
+            { "id": 2, "response": "===" },
+            { "id": 3, "response": "!=" },
+            { "id": 4, "response": "=!" }
+          ],
+          "answerId": 2
+        },
+        {
+          "id": 5,
+          "question": "Qual das opções seguintes é uma estrutura de repetição em JavaScript?",
+          "options": [
+            { "id": 1, "response": "for" },
+            { "id": 2, "response": "repeat" },
+            { "id": 3, "response": "foreach" },
+            { "id": 4, "response": "loop" }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 6,
+          "question": "Qual método é usado para converter um objeto JSON em string?",
+          "options": [
+            { "id": 1, "response": "parse()" },
+            { "id": 2, "response": "stringify()" },
+            { "id": 3, "response": "toString()" },
+            { "id": 4, "response": "json()" }
+          ],
+          "answerId": 2
+        },
+        {
+          "id": 7,
+          "question": "Qual função é usada para calcular o maior número de uma lista em JavaScript?",
+          "options": [
+            { "id": 1, "response": "Math.max()" },
+            { "id": 2, "response": "Math.min()" },
+            { "id": 3, "response": "Math.ceil()" },
+            { "id": 4, "response": "Math.abs()" }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 8,
+          "question": "Qual palavra-chave é usada para definir uma função em JavaScript?",
+          "options": [
+            { "id": 1, "response": "function" },
+            { "id": 2, "response": "def" },
+            { "id": 3, "response": "define" },
+            { "id": 4, "response": "fun" }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 9,
+          "question": "Qual é o valor de typeof null em JavaScript?",
+          "options": [
+            { "id": 1, "response": "null" },
+            { "id": 2, "response": "undefined" },
+            { "id": 3, "response": "object" },
+            { "id": 4, "response": "function" }
+          ],
+          "answerId": 3
+        },
+        {
+          "id": 10,
+          "question": "Qual dos seguintes é um framework JavaScript?",
+          "options": [
+            { "id": 1, "response": "React" },
+            { "id": 2, "response": "Laravel" },
+            { "id": 3, "response": "Django" },
+            { "id": 4, "response": "Spring" }
+          ],
+          "answerId": 1
         }
       ]
     },
     {
       "id": "2",
       "name": "Java",
-      "description": "Quiz de perguntas sobre a linguagem Java Script",
+      "description": "Quiz sobre conceitos básicos da linguagem Java",
       "questions": [
         {
           "id": 1,
-          "question": "Quem tu es",
+          "question": "Qual palavra-chave é usada para herdar uma classe em Java?",
           "options": [
-            {
-              "id": 1,
-              "response": "baixinho"
-            },
-            {
-              "id": 2,
-              "response": "baixinho"
-            },
-            {
-              "id": 3,
-              "response": "baixinho"
-            },
-            {
-              "id": 4,
-              "response": "baixinho"
-            }
+            { "id": 1, "response": "extends" },
+            { "id": 2, "response": "implements" },
+            { "id": 3, "response": "inherits" },
+            { "id": 4, "response": "super" }
           ],
           "answerId": 1
         },
         {
           "id": 2,
-          "question": "Quem tu es",
+          "question": "Qual método é usado para iniciar a execução de um programa Java?",
           "options": [
-            {
-              "id": 1,
-              "response": "baixinho"
-            },
-            {
-              "id": 2,
-              "response": "baixinho"
-            },
-            {
-              "id": 3,
-              "response": "baixinho"
-            },
-            {
-              "id": 4,
-              "response": "baixinho"
-            }
+            { "id": 1, "response": "start()" },
+            { "id": 2, "response": "begin()" },
+            { "id": 3, "response": "main()" },
+            { "id": 4, "response": "run()" }
+          ],
+          "answerId": 3
+        },
+        {
+          "id": 3,
+          "question": "Qual é o tipo de dado padrão para números inteiros em Java?",
+          "options": [
+            { "id": 1, "response": "int" },
+            { "id": 2, "response": "float" },
+            { "id": 3, "response": "double" },
+            { "id": 4, "response": "long" }
           ],
           "answerId": 1
+        },
+        {
+          "id": 4,
+          "question": "Qual operador lógico representa 'ou' em Java?",
+          "options": [
+            { "id": 1, "response": "&&" },
+            { "id": 2, "response": "||" },
+            { "id": 3, "response": "==" },
+            { "id": 4, "response": "!=" }
+          ],
+          "answerId": 2
+        },
+        {
+          "id": 5,
+          "question": "Qual é a classe usada para trabalhar com listas de objetos em Java?",
+          "options": [
+            { "id": 1, "response": "ArrayList" },
+            { "id": 2, "response": "LinkedList" },
+            { "id": 3, "response": "HashMap" },
+            { "id": 4, "response": "Set" }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 6,
+          "question": "Qual é o modificador de acesso padrão em Java?",
+          "options": [
+            { "id": 1, "response": "public" },
+            { "id": 2, "response": "private" },
+            { "id": 3, "response": "protected" },
+            { "id": 4, "response": "default" }
+          ],
+          "answerId": 4
+        },
+        {
+          "id": 7,
+          "question": "Qual dos seguintes é um loop em Java?",
+          "options": [
+            { "id": 1, "response": "repeat" },
+            { "id": 2, "response": "for" },
+            { "id": 3, "response": "loop" },
+            { "id": 4, "response": "foreach" }
+          ],
+          "answerId": 2
+        },
+        {
+          "id": 8,
+          "question": "Como é chamada uma variável que armazena o endereço de memória de outra variável em Java?",
+          "options": [
+            { "id": 1, "response": "pointer" },
+            { "id": 2, "response": "reference" },
+            { "id": 3, "response": "alias" },
+            { "id": 4, "response": "handler" }
+          ],
+          "answerId": 2
+        },
+        {
+          "id": 9,
+          "question": "Qual classe representa uma sequência imutável de caracteres em Java?",
+          "options": [
+            { "id": 1, "response": "String" },
+            { "id": 2, "response": "Buffer" },
+            { "id": 3, "response": "StringBuilder" },
+            { "id": 4, "response": "StringBuffer" }
+          ],
+          "answerId": 1
+        },
+        {
+          "id": 10,
+          "question": "Qual das opções abaixo representa um tipo de exceção verificada em Java?",
+          "options": [
+            { "id": 1, "response": "RuntimeException" },
+            { "id": 2, "response": "NullPointerException" },
+            { "id": 3, "response": "IOException" },
+            { "id": 4, "response": "ArithmeticException" }
+          ],
+          "answerId": 3
         }
       ]
     }
