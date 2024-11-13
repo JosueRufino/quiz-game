@@ -1,8 +1,12 @@
 <template>
   <div class="background-container">
     <div class="d-flex justify-content-center align-items-center vh-100">
-      <div class="card p-4 shadow" style="width: 100%; max-width: 350px;">
-        <h3 class="text-center mb-4">Login</h3>
+      <div class="card p-4 shadow" style="width: 100%; max-width: 350px">
+        <div class="w-100 d-flex justify-content-center">
+          <img src="/assets/logo.png" style="width: 220px; height: 120px" />
+        </div>
+        <h3 class="text-center mb-4">Painel administrativo</h3>
+        <p>Login</p>
 
         <form @submit.prevent="handleLogin">
           <div class="mb-3">
@@ -37,48 +41,68 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useFetch } from '#app' // Para fazer requisições no Nuxt
-
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useFetch } from "#app"; // Para fazer requisições no Nuxt
+import Swal from "sweetalert2";
 definePageMeta({
-  layout: "auth"
-})
+  layout: "auth",
+});
 
-const router = useRouter()
+const router = useRouter();
 
 // Variáveis de estado para nome de usuário e senha
-const username = ref('')
-const password = ref('')
+const username = ref("");
+const password = ref("");
 
 // Função para lidar com o login diretamente na página
 const handleLogin = async () => {
   try {
     // Faz a requisição para a API
-    const { data, error } = await useFetch(`http://localhost:4000/admins?username=${username.value}`)
+    const { data, error } = await useFetch(
+      `http://localhost:4000/admins?username=${username.value}`
+    );
 
     if (error.value) {
-      alert('Erro ao tentar fazer login')
-      return
+      alert("Erro ao tentar fazer login");
+      return;
     }
 
-    const user = data.value?.find((user) => user.username === username.value)
+    const user = data.value?.find((user) => user.username === username.value);
 
     if (user && user.password === password.value) {
       // Armazenar os dados do usuário e token localmente
-      localStorage.setItem('user', JSON.stringify(user))
-      localStorage.setItem('token', 'fake-jwt-token') // Token simulado
-
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", "fake-jwt-token"); // Token simulado
+      Swal.fire({
+        icon: "success",
+        title: "Login!",
+        text: "Login feito com sucesso.",
+        timer: 1000, // Temporizador de 10 segundos (10000 ms)
+        timerProgressBar: true, // Exibe a barra de progresso do temporizador
+        didOpen: () => {
+          Swal.showLoading(); // Mostra o ícone de carregamento junto ao temporizador
+        },
+      });
       // Redirecionar para o dashboard
-      router.push('/admin')
+      router.push("/admin");
     } else {
-      alert('Nome de usuário ou senha incorretos!')
+      Swal.fire({
+        icon: "error",
+        title: "Erro ao fazer login!",
+        text: "Nome de usuário ou senha incorretos.",
+        timer: 1000, // Temporizador de 10 segundos (10000 ms)
+        timerProgressBar: true, // Exibe a barra de progresso do temporizador
+        didOpen: () => {
+          Swal.showLoading(); // Mostra o ícone de carregamento junto ao temporizador
+        },
+      });
     }
   } catch (error) {
-    console.error('Erro ao fazer login', error)
-    alert('Erro ao tentar fazer login. Tente novamente mais tarde.')
+    console.error("Erro ao fazer login", error);
+    alert("Erro ao tentar fazer login. Tente novamente mais tarde.");
   }
-}
+};
 </script>
 
 <style scoped>
@@ -110,6 +134,5 @@ const handleLogin = async () => {
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  height: 50vh;
 }
 </style>

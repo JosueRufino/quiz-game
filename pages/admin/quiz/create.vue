@@ -106,10 +106,12 @@
 
 <script setup>
 import { ref } from "vue";
+import Swal from "sweetalert2"; // Importa o SweetAlert2
 
 definePageMeta({
   layout: "admin",
 });
+const router = useRouter()
 
 // Definir o objeto de quiz
 const newQuiz = ref({
@@ -150,6 +152,23 @@ const removeQuestion = (index) => {
 
 // Função para salvar o quiz e fazer a requisição para o JSON Server
 const addQuiz = async () => {
+  // (Opcional) Adicionar uma confirmação antes de salvar
+  const confirmResult = await Swal.fire({
+    title: "Confirmar Criação",
+    text: "Você deseja salvar este quiz?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonColor: "#a2ed56",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, salvar",
+    cancelButtonText: "Cancelar",
+  });
+
+  if (!confirmResult.isConfirmed) {
+    // Se o usuário cancelar, não faz nada
+    return;
+  }
+
   try {
     // Enviar o novo quiz para o JSON Server
     const response = await fetch("http://localhost:4000/quiz", {
@@ -186,14 +205,27 @@ const addQuiz = async () => {
       ],
     };
 
-    // Mostrar um alerta ou notificação de sucesso
-    alert("Quiz criado com sucesso!");
+    // Mostrar um alerta de sucesso usando SweetAlert2
+    await Swal.fire({
+      title: "Sucesso!",
+      text: "Quiz criado com sucesso!",
+      icon: "success",
+      showConfirmButton: false,
+    });
+    router.push("/admin/quiz")
   } catch (error) {
     console.error("Erro ao criar o quiz:", error);
-    alert("Erro ao criar o quiz, tente novamente.");
+    // Mostrar um alerta de erro usando SweetAlert2
+    await Swal.fire({
+      title: "Erro",
+      text: "Erro ao criar o quiz, tente novamente.",
+      icon: "error",
+      showConfirmButton: false,
+    });
   }
 };
 </script>
+
 
 <style scoped>
 .container {

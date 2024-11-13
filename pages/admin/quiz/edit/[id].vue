@@ -97,6 +97,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import Swal from "sweetalert2";
 
 definePageMeta({
   layout: "admin",
@@ -169,11 +170,19 @@ const updateQuiz = async () => {
 
     const data = await response.json();
     console.log("Quiz atualizado com sucesso:", data);
-    alert("Quiz atualizado com sucesso!");
+    Swal.fire({
+      icon: "success",
+      title: "Sucesso",
+      text: "Quiz atualizado com sucesso!",
+    });
     router.push("/admin/quiz");
   } catch (error) {
     console.error("Erro ao atualizar o quiz:", error);
-    alert("Erro ao atualizar o quiz, tente novamente.");
+    Swal.fire({
+      icon: "error",
+      title: "Erro",
+      text: "Erro ao atualizar o quiz, tente novamente.",
+    });
   }
 };
 

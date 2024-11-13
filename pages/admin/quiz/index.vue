@@ -60,6 +60,7 @@
 
 <script setup>
 import { ref, computed } from "vue";
+import Swal from "sweetalert2";
 
 definePageMeta({
   layout: "admin",
@@ -104,26 +105,38 @@ const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
 
-// Função para deletar um quiz
+// Função para deletar um quiz com confirmação
 const deleteQuiz = async (quizId) => {
-  try {
-    const response = await fetch(`http://localhost:4000/quiz/${quizId}`, {
-      method: "DELETE",
-    });
-    if (response.ok) {
-      // Atualiza a lista de quizzes após a exclusão
-      await refresh();
-      alert("Quiz excluído com sucesso!");
-    } else {
-      console.error("Erro ao deletar o quiz.");
-      alert("Erro ao deletar o quiz.");
+  const result = await Swal.fire({
+    title: "Tem certeza?",
+    text: "Você realmente deseja excluir este quiz? Esta ação não pode ser desfeita!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#a2ed56",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, excluir",
+    cancelButtonText: "Cancelar"
+  });
+
+  if (result.isConfirmed) {
+    try {
+      const response = await fetch(`http://localhost:4000/quiz/${quizId}`, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        await refresh();
+        Swal.fire("Excluído!", "O quiz foi excluído com sucesso.", "success");
+      } else {
+        Swal.fire("Erro", "Erro ao deletar o quiz.", "error");
+      }
+    } catch (error) {
+      console.error("Erro de conexão ao deletar o quiz.", error);
+      Swal.fire("Erro", "Erro de conexão ao deletar o quiz.", "error");
     }
-  } catch (error) {
-    console.error("Erro de conexão ao deletar o quiz.", error);
-    alert("Erro de conexão ao deletar o quiz.");
   }
 };
 </script>
+
 
 <style scoped lang="scss">
 @import url(https://fonts.googleapis.com/css?family=Montserrat:900|Raleway:400,400i,700,700i);

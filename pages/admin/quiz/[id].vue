@@ -1,5 +1,5 @@
 <template>
-  <div class="p-3">
+  <div class="p-3 content">
     <div
       class="card p-2 shadow-lg"
       style="
@@ -24,7 +24,7 @@
       </div>
     </div>
     <div>
-      <QuizCardQuestion :quiz = "quiz"/>
+      <QuizCardQuestion :quiz="quiz" />
     </div>
   </div>
 </template>
@@ -66,3 +66,10 @@ const deleteQuiz = async (quizId) => {
   }
 };
 </script>
+
+<style scoped>
+.content {
+  overflow-y: auto; /* Permite o scroll */
+  max-height: 90vh; /* Limita a altura da página */
+}
+</style>

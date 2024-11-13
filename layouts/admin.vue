@@ -1,7 +1,12 @@
 <template>
   <div class="wrapper">
     <!-- Sidebar -->
-    <nav class="sidebar" id="sidebar" style="color: #fff; background: #000"    v-if="!isSidebarOpen">
+    <nav
+      class="sidebar"
+      id="sidebar"
+      style="color: #fff; background: #000"
+      v-if="!isSidebarOpen"
+    >
       <div
         class="sidebar-header d-flex align-items-center"
         style="background: #1a1b1b; color: #ffffff"
@@ -34,7 +39,7 @@
 
       <!-- Links de Definições e Sair -->
       <ul class="list-unstyled components">
-        <li>
+        <li @click="logout">
           <a href="#" id="none" style="color: #ffffff">
             <i class="bi bi-box-arrow-right"></i>Sair
           </a>
@@ -53,7 +58,11 @@
             class="w-100 h-100 d-flex justify-content-between align-items-center"
           >
             <div class="d-flex">
-              <button class="btn btn-outline-light btn-md" id="sidebarCollapse"  @click="toggleSidebar">
+              <button
+                class="btn btn-outline-light btn-md"
+                id="sidebarCollapse"
+                @click="toggleSidebar"
+              >
                 <i class="bi bi-list"></i>
               </button>
             </div>
@@ -67,7 +76,7 @@
 
 <script setup>
 import { ref } from "vue";
-
+import Swal from "sweetalert2";
 const router = useRouter();
 
 // Definição do array com os links da sidebar, incluindo URL
@@ -82,11 +91,44 @@ const redirect = (url) => {
   router.push(url);
 };
 
-
 const isSidebarOpen = ref(false);
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value;
 }
+
+const logout = () => {
+  Swal.fire({
+    title: "Tem certeza?",
+    text: "Você realmente deseja sair?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#a2ed56",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sim, desejo",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Aqui você coloca a lógica para o logout ou exclusão do quiz
+      console.log("Quiz excluído com sucesso!");
+      localStorage.removeItem("user");
+      router.push("/auth");
+      // Exemplo de alerta de confirmação após exclusão
+      Swal.fire({
+        icon: "success",
+        title: "Logout!",
+        text: "Logout feito com sucesso.",
+        timer: 1000, // Temporizador de 10 segundos (10000 ms)
+        timerProgressBar: true, // Exibe a barra de progresso do temporizador
+        didOpen: () => {
+          Swal.showLoading(); // Mostra o ícone de carregamento junto ao temporizador
+        },
+      });
+
+      // Aqui você poderia redirecionar ou atualizar a página, se necessário
+      // Exemplo: router.push("/sua-rota");
+    }
+  });
+};
 </script>
 
 <style scoped>
@@ -114,6 +156,7 @@ body {
   width: 100%;
   overflow: hidden;
   transition: background 0.3s, color 0.3s;
+  cursor: pointer;
 }
 
 .sidebar {
