@@ -1,62 +1,99 @@
 <template>
-  <div class="w-100 h-100">
-    <div class="d-flex justify-content-center align-items-center h-100 w-100">
-      <div class="card p-2" style="width: 600px" v-if="!quizSelected">
+  <div class="container-fluid vh-100">
+    <div class="d-flex justify-content-center align-items-center h-100">
+      <!-- Quiz Selection View -->
+      <div class="card p-4 quiz-container" v-if="!quizSelected">
         <div>
-          <div class="d-flex justify-content-between">
-            <h3>Escolha um Quiz</h3>
-            <NuxtLink to="/" style="text-decoration: none; color: black">
-              <div class="d-flex align-items-center">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="mb-0 text-white">Escolha um Quiz</h3>
+            <NuxtLink to="/" class="text-decoration-none text-dark">
+              <div class="d-flex align-items-center text-white">
                 <i class="bi bi-arrow-left-circle fs-3 me-2"></i>
                 <span>Inicio</span>
               </div>
             </NuxtLink>
           </div>
-          <div
-            v-for="quiz in quizzes"
-            :key="quiz.id"
-            class="quiz-card"
-            @click="selectQuiz(quiz)"
-          >
-            <h3>{{ quiz.name }}</h3>
-            <p>{{ quiz.description }}</p>
+
+          <div class="quiz-list">
+            <div
+              v-for="quiz in quizzes"
+              :key="quiz.id"
+              class="quiz-card"
+              @click="selectQuiz(quiz)"
+            >
+              <h3>{{ quiz.name }}</h3>
+              <p class="mb-0">{{ quiz.description }}</p>
+            </div>
           </div>
         </div>
       </div>
-      <div v-else>
+
+      <!-- Difficulty Selection -->
+      <div class="card p-4 quiz-container" v-else-if="!difficultySelected">
+        <h3 class="mb-4 text-white">Escolha a Dificuldade</h3>
+        <div class="difficulty-list">
+          <div
+            class="difficulty-card"
+            v-for="difficulty in difficulties"
+            :key="difficulty.id"
+            @click="selectDifficulty(difficulty.id)"
+          >
+            <h4>{{ difficulty.name }}</h4>
+            <p class="mb-0">{{ difficulty.description }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quiz Questions View -->
+      <div class="quiz-container" v-else>
         <div
-          class="card p-2"
-          style="
-            width: 600px;
-            height: 45vh;
-            background-color: black;
-            opacity: 0.9;
-          "
+          class="card p-4 question-card"
           v-if="currentQuestion < quizData.questions.length"
         >
-          <div>
-            <h2 class="text-white">
+          <div class="d-flex flex-column h-100">
+            <!-- Timer Display -->
+            <div v-if="selectedDifficulty === 'timed'" class="text-center mb-3">
+              <div class="timer-circle">
+                <span class="text-white fs-2">{{ timeLeft }}</span>
+              </div>
+            </div>
+            <div
+              v-if="selectedDifficulty !== 'hardcore'"
+              class="text-center mb-3"
+            >
+              <h4 class="text-white">Pontuação: {{ score }}</h4>
+            </div>
+            <h2 class="text-white mb-3">
               Pergunta {{ currentQuestion + 1 }} de
               {{ quizData.questions.length }}
             </h2>
-            <p class="text-white">
+            <p class="text-white mb-4">
               {{ quizData.questions[currentQuestion].question }}
             </p>
 
-            <div
-              v-for="(option, index) in quizData.questions[currentQuestion]
-                .options"
-              :key="index"
-              :class="['option-card', optionClass(option)]"
-              @click="selectOption(option)"
-            >
-              {{ option.response }}
+            <div class="options-container">
+              <div
+                v-for="(option, index) in quizData.questions[currentQuestion]
+                  .options"
+                :key="index"
+                :class="[
+                  'option-card',
+                  optionClass(option),
+                  {
+                    'selected-option':
+                      !answerSubmitted && selectedAnswer === option,
+                  },
+                ]"
+                @click="selectOption(option)"
+              >
+                {{ option.response }}
+              </div>
             </div>
 
             <button
               v-if="selectedAnswer"
               @click="submitAnswer"
-              class="btn btn-success"
+              class="btn btn-success mt-auto w-100"
               :disabled="answerSubmitted"
             >
               Submeter Resposta
@@ -69,255 +106,404 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
-import winSoundUrl from "/assets/music/good.mp3";
-import loseSoundUrl from "/assets/music/error.mp3";
 
-// Estado inicial do quiz
 const quizzes = ref([]);
 const quizData = ref(null);
 const quizSelected = ref(false);
-const quizStarted = ref(false);
+const difficultySelected = ref(false);
+const selectedDifficulty = ref(null);
 const currentQuestion = ref(0);
 const selectedAnswer = ref(null);
 const answerSubmitted = ref(false);
 const isCorrectAnswer = ref(false);
 const score = ref(0);
+const timeLeft = ref(10);
+const timer = ref(null);
+const router = useRouter();
 
-let winSound;
-let loseSound;
+const difficulties = [
+  {
+    id: "normal",
+    name: "Normal",
+    description:
+      "Modo clássico: Responda todas as questões e veja seu resultado no final.",
+  },
+  {
+    id: "hardcore",
+    name: "Hardcore",
+    description: "Modo desafiador: Erre uma questão e o jogo termina!",
+  },
+  {
+    id: "timed",
+    name: "Contra o Tempo",
+    description: "10 segundos para responder cada questão. O tempo não para!",
+  },
+];
+
+let winSound, loseSound;
+
 onMounted(() => {
   if (typeof window !== "undefined") {
-    winSound = new Audio(winSoundUrl);
-    loseSound = new Audio(loseSoundUrl);
+    winSound = new Audio("/assets/music/good.mp3");
+    loseSound = new Audio("/assets/music/error.mp3");
   }
+
+  loadQuizzes();
 });
 
-const playWinSound = () => {
-  if (winSound) {
-    winSound.play();
+const startTimer = () => {
+  timeLeft.value = 10;
+  clearInterval(timer.value);
+
+  timer.value = setInterval(() => {
+    timeLeft.value--;
+
+    if (timeLeft.value === 0) {
+      clearInterval(timer.value);
+      handleTimeUp();
+    }
+  }, 1000);
+};
+
+const handleTimeUp = () => {
+  if (!selectedAnswer.value) {
+    playSound(false);
+    showTimeUpMessage();
+  }
+  nextQuestion();
+};
+
+const showTimeUpMessage = () => {
+  Swal.fire({
+    title: "Tempo Esgotado!",
+    text: "Você não respondeu a tempo.",
+    icon: "warning",
+    timer: 1500,
+    showConfirmButton: false,
+  });
+};
+
+const selectDifficulty = (difficulty) => {
+  selectedDifficulty.value = difficulty;
+  difficultySelected.value = true;
+
+  if (difficulty === "timed") {
+    startTimer();
   }
 };
 
-const playLoseSound = () => {
-  if (loseSound) {
-    loseSound.play();
-  }
-};
-
-// Função para embaralhar um array (algoritmo de Fisher-Yates)
-const shuffleArray = (array) => {
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]]; // Troca os elementos
-  }
-};
-
-// Carregar todos os quizzes disponíveis
 const loadQuizzes = async () => {
   try {
     const response = await fetch("http://localhost:4000/quiz");
-    const data = await response.json();
-    quizzes.value = data;
+    if (!response.ok) throw new Error("Erro ao carregar os quizzes");
+    quizzes.value = await response.json();
   } catch (error) {
     console.error("Erro ao carregar os quizzes:", error);
+    Swal.fire({
+      title: "Erro",
+      text: "Não foi possível carregar os quizzes. Tente novamente mais tarde.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
   }
 };
 
-// Selecionar um quiz
 const selectQuiz = (quiz) => {
-  quizData.value = quiz;
-  // Embaralhar as perguntas e as opções
+  quizData.value = JSON.parse(JSON.stringify(quiz)); // Clona o objeto
   shuffleArray(quizData.value.questions);
-  quizData.value.questions.forEach((question) => {
-    shuffleArray(question.options); // Embaralha as opções de cada pergunta
-  });
+  quizData.value.questions.forEach((question) =>
+    shuffleArray(question.options)
+  );
   quizSelected.value = true;
 };
 
-// Escolher uma opção
 const selectOption = (option) => {
   if (!answerSubmitted.value) {
     selectedAnswer.value = option;
   }
 };
 
-// Submeter resposta e exibir feedback
 const submitAnswer = () => {
-  if (selectedAnswer.value) {
-    isCorrectAnswer.value =
-      selectedAnswer.value.id ===
-      quizData.value.questions[currentQuestion.value].answerId;
+  if (!selectedAnswer.value) return;
 
-    if (isCorrectAnswer.value) {
-      score.value++;
-      winSound.play(); // Toca o som de vitória
-    } else {
-      loseSound.play(); // Toca o som de derrota
-    }
+  isCorrectAnswer.value =
+    selectedAnswer.value.id ===
+    quizData.value.questions[currentQuestion.value].answerId;
 
-    answerSubmitted.value = true;
-
-    // Verifica se é a última pergunta
-    if (currentQuestion.value === quizData.value.questions.length - 1) {
-      // Mostrar modal de feedback e depois o resultado final
-      Swal.fire({
-        title: isCorrectAnswer.value
-          ? "Resposta Correta!"
-          : "Resposta Incorreta!",
-        text: isCorrectAnswer.value
-          ? `Você acertou a questão: "${
-              quizData.value.questions[currentQuestion.value].question
-            }"`
-          : `A resposta correta era: "${
-              quizData.value.questions[currentQuestion.value].options.find(
-                (option) =>
-                  option.id ===
-                  quizData.value.questions[currentQuestion.value].answerId
-              ).response
-            }"`,
-        icon: isCorrectAnswer.value ? "success" : "error",
-        confirmButtonText: "Ver Resultado",
-      }).then(showFinalResult);
-    } else {
-      // Se não for a última, mostrar modal de feedback e avançar para próxima pergunta
-      Swal.fire({
-        title: isCorrectAnswer.value
-          ? "Resposta Correta!"
-          : "Resposta Incorreta!",
-        text: isCorrectAnswer.value
-          ? `Você acertou a questão: "${
-              quizData.value.questions[currentQuestion.value].question
-            }"`
-          : `A resposta correta era: "${
-              quizData.value.questions[currentQuestion.value].options.find(
-                (option) =>
-                  option.id ===
-                  quizData.value.questions[currentQuestion.value].answerId
-              ).response
-            }"`,
-        icon: isCorrectAnswer.value ? "success" : "error",
-        confirmButtonText: "Próxima Pergunta",
-      }).then(nextQuestion);
-    }
+  if (isCorrectAnswer.value) {
+    score.value++;
   }
+
+  playSound(isCorrectAnswer.value);
+  answerSubmitted.value = true;
+
+  const correctResponse = quizData.value.questions[
+    currentQuestion.value
+  ].options.find(
+    (option) =>
+      option.id === quizData.value.questions[currentQuestion.value].answerId
+  ).response;
+
+  // Tratamento específico para modo Hardcore
+  if (selectedDifficulty.value === "hardcore" && !isCorrectAnswer.value) {
+    Swal.fire({
+      position: "top-end",
+      title: "Game Over!",
+      text: `Resposta incorreta! A resposta correta era: "${correctResponse}"`,
+      icon: "error",
+      confirmButtonText: "Ver Resultado",
+    }).then(showFinalResult);
+    return;
+  }
+
+  // Tratamento para modo Contra o Tempo
+  if (selectedDifficulty.value === "timed") {
+    clearInterval(timer.value);
+    // Mostra feedback rápido
+    Swal.fire({
+      position: "top-end",
+      title: isCorrectAnswer.value ? "Correto!" : "Incorreto!",
+      text: isCorrectAnswer.value
+        ? "Você acertou!"
+        : `A resposta correta era: "${correctResponse}"`,
+      icon: isCorrectAnswer.value ? "success" : "error",
+      timer: 1500,
+      showConfirmButton: false,
+    }).then(() => {
+      if (currentQuestion.value < quizData.value.questions.length - 1) {
+        nextQuestion();
+      } else {
+        showFinalResult();
+      }
+    });
+    return;
+  }
+
+  // Modo Normal
+  const feedbackConfig = {
+    title: isCorrectAnswer.value ? "Resposta Correta!" : "Resposta Incorreta!",
+    text: isCorrectAnswer.value
+      ? `Você acertou a questão!`
+      : `A resposta correta era: "${correctResponse}"`,
+    icon: isCorrectAnswer.value ? "success" : "error",
+    position: "top-end",
+    showCancelButton:
+      currentQuestion.value < quizData.value.questions.length - 1,
+    confirmButtonColor: isCorrectAnswer.value ? "#198754" : "#dc3545",
+    confirmButtonText:
+      currentQuestion.value === quizData.value.questions.length - 1
+        ? "Ver Resultado"
+        : "Próxima Pergunta",
+    cancelButtonText: "Abandonar jogo",
+    allowOutsideClick: false,
+  };
+
+  Swal.fire(feedbackConfig).then((result) => {
+    if (result.isConfirmed) {
+      if (currentQuestion.value === quizData.value.questions.length - 1) {
+        showFinalResult();
+      } else {
+        nextQuestion();
+      }
+    } else {
+      abandonQuiz();
+    }
+  });
 };
 
-// Ir para a próxima pergunta
 const nextQuestion = () => {
   answerSubmitted.value = false;
   selectedAnswer.value = null;
   currentQuestion.value++;
+
+  if (
+    selectedDifficulty.value === "timed" &&
+    currentQuestion.value < quizData.value.questions.length
+  ) {
+    setTimeout(() => startTimer(), 500); // Pequeno atraso antes do timer.
+  }
 };
 
-// Função para mostrar o resultado final com SweetAlert
-const showFinalResult = () => {
-  const totalQuestions = quizData.value.questions.length;
-  const correctAnswers = score.value;
-  const percentage = (correctAnswers / totalQuestions) * 100;
+const abandonQuiz = () => {
+  clearInterval(timer.value);
+  Swal.fire({
+    title: "Abandonar partida!",
+    text: "Partida abandonada com sucesso.",
+    icon: "success",
+    showConfirmButton: false,
+    timer: 1000,
+  });
+  router.push("/");
+};
 
-  const resultMessage =
-    percentage >= 50
-      ? `Parabéns! Você acertou ${correctAnswers} de ${totalQuestions} perguntas e venceu!`
-      : `Você acertou ${correctAnswers} de ${totalQuestions} perguntas. Infelizmente, você perdeu.`;
+const showFinalResult = () => {
+  clearInterval(timer.value);
+  const totalQuestions = quizData.value.questions.length;
+  const percentage = (score.value / totalQuestions) * 100;
+
+  let message = "";
+  if (selectedDifficulty.value === "hardcore") {
+    message = `Você chegou até a questão ${
+      currentQuestion.value + 1
+    } de ${totalQuestions}!`;
+  } else {
+    message = `Você acertou ${score.value} de ${totalQuestions} perguntas!`;
+  }
 
   Swal.fire({
     title: "Resultado Final",
-    text: resultMessage,
+    text:
+      percentage >= 50
+        ? `Parabéns! ${message}`
+        : `Infelizmente você perdeu !  ${message}`,
     icon: percentage >= 50 ? "success" : "error",
     confirmButtonText: "Jogar Novamente",
-  }).then(() => {
-    restartQuiz();
-  });
+  }).then(restartQuiz);
 };
 
-// Reiniciar o quiz
 const restartQuiz = () => {
+  clearInterval(timer.value);
   quizSelected.value = false;
-  quizStarted.value = false;
+  difficultySelected.value = false;
+  selectedDifficulty.value = null;
   currentQuestion.value = 0;
   score.value = 0;
   selectedAnswer.value = null;
   answerSubmitted.value = false;
+  timeLeft.value = 10;
 };
 
-// Carregar os quizzes ao montar o componente
-onMounted(() => {
-  loadQuizzes();
-});
+const playSound = (isCorrect) => {
+  if (isCorrect && winSound) winSound.play();
+  if (!isCorrect && loseSound) loseSound.play();
+};
 
-// Retornar a classe CSS para destacar as opções corretas e incorretas
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+};
+
 const optionClass = (option) => {
-  if (!answerSubmitted.value) return "";
-  if (option.id === quizData.value.questions[currentQuestion.value].answerId)
-    return "correct";
-  if (
-    option === selectedAnswer.value &&
-    option.id !== quizData.value.questions[currentQuestion.value].answerId
-  )
-    return "incorrect";
-  return "";
+  if (!answerSubmitted.value) {
+    // Retorna apenas a classe de seleção, sem alterar o background
+    return selectedAnswer.value === option ? "selected-option" : "bg-white";
+  }
+
+  const isCorrectAnswer =
+    option.id === quizData.value.questions[currentQuestion.value].answerId;
+  const isSelectedWrongAnswer =
+    option === selectedAnswer.value && !isCorrectAnswer;
+
+  if (isCorrectAnswer) return "bg-success text-white";
+  if (isSelectedWrongAnswer) return "bg-danger text-white";
+  return "bg-white";
 };
 </script>
 
 <style scoped>
-.game-container {
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-radius: 8px;
+.quiz-container {
+  width: 600px;
+  max-height: 90vh;
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
-.quiz-card {
+.quiz-list,
+.difficulty-list {
+  max-height: calc(90vh - 100px);
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.quiz-card,
+.difficulty-card {
   padding: 1rem;
   margin: 1rem 0;
-  background-color: #e0e0e0;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-.quiz-card:hover {
-  background-color: #d0d0d0;
-}
-
-.option-card {
-  padding: 1rem;
-  margin-top: 0.5rem;
-  background-color: #ffffff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  background-color: #e9ecef;
+  border-radius: 0.5rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.option-card:hover {
-  background-color: #f5f5f5;
+.quiz-card:hover,
+.difficulty-card:hover {
+  background-color: #dee2e6;
 }
 
-.option-card.correct {
-  background-color: #c8e6c9; /* Verde claro para resposta correta */
+.question-card {
+  height: 90vh;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
 }
 
-.option-card.incorrect {
-  background-color: #ffcdd2; /* Vermelho claro para resposta incorreta */
+.options-container {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  padding-right: 10px;
 }
 
-.feedback {
-  margin-top: 1rem;
-  font-weight: bold;
+.option-card {
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: white;
 }
 
-.feedback.correct {
-  color: green;
+.option-card:hover:not(.bg-success):not(.bg-danger):not(.selected-option) {
+  background-color: #f8f9fa !important;
 }
 
-.feedback.incorrect {
-  color: red;
+.selected-option {
+  background-color: #0d6efd !important;
+  color: white !important;
+  border-color: #0a58ca !important;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-button {
-  margin-top: 1.5rem;
+.timer-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+/* Estilização da scrollbar */
+.quiz-list::-webkit-scrollbar,
+.difficulty-list::-webkit-scrollbar,
+.options-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.quiz-list::-webkit-scrollbar-track,
+.difficulty-list::-webkit-scrollbar-track,
+.options-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.quiz-list::-webkit-scrollbar-thumb,
+.difficulty-list::-webkit-scrollbar-thumb,
+.options-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 3px;
+}
+
+.quiz-list::-webkit-scrollbar-thumb:hover,
+.difficulty-list::-webkit-scrollbar-thumb:hover,
+.options-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
 }
 </style>
