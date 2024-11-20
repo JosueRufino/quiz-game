@@ -84,7 +84,6 @@ const sidebarLinks = ref([
   { name: "Dashboard", icon: "bi bi-person-lines-fill", url: "/admin" },
   { name: "Quizzes", icon: "bi bi-table", url: "/admin/quiz/" },
   { name: "Usuários", icon: "bi bi-globe", url: "/admin/quiz/" },
-  { name: "Recordes", icon: "bi bi-globe", url: "/admin/quiz/" },
 ]);
 
 const redirect = (url) => {

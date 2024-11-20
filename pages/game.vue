@@ -108,6 +108,8 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
+import winSoundUrl from "/assets/music/good.mp3";
+import loseSoundUrl from "/assets/music/erro.wav";
 
 const quizzes = ref([]);
 const quizData = ref(null);
@@ -142,16 +144,31 @@ const difficulties = [
   },
 ];
 
-let winSound, loseSound;
+let winSound, loseSound, winGameSound, loseGameSound, tictac;
 
 onMounted(() => {
   if (typeof window !== "undefined") {
-    winSound = new Audio("/assets/music/good.mp3");
-    loseSound = new Audio("/assets/music/error.mp3");
+    winSound = new Audio(winSoundUrl);
+    loseSound = new Audio(loseSoundUrl);
+    winGameSound = new Audio("/assets/music/win.mp3"); // Som de vitória final
+    loseGameSound = new Audio("/assets/music/lose.wav"); // Som de derrota final
+    tictac = new Audio("/assets/music/time.mp3");
   }
 
   loadQuizzes();
 });
+
+const playWinSound = () => {
+  if (winSound) {
+    winSound.play();
+  }
+};
+
+const playLoseSound = () => {
+  if (loseSound) {
+    loseSound.play();
+  }
+};
 
 const startTimer = () => {
   timeLeft.value = 10;
@@ -160,8 +177,11 @@ const startTimer = () => {
   timer.value = setInterval(() => {
     timeLeft.value--;
 
+    if (timeLeft.value < 5) tictac.play();
+
     if (timeLeft.value === 0) {
       clearInterval(timer.value);
+      tictac.pause()
       handleTimeUp();
     }
   }, 1000);
@@ -340,8 +360,9 @@ const abandonQuiz = () => {
 
 const showFinalResult = () => {
   clearInterval(timer.value);
-  const totalQuestions = quizData.value.questions.length;
-  const percentage = (score.value / totalQuestions) * 100;
+
+  const totalQuestions = quizData.value?.questions?.length || 0;
+  const percentage = totalQuestions ? (score.value / totalQuestions) * 100 : 0;
 
   let message = "";
   if (selectedDifficulty.value === "hardcore") {
@@ -352,15 +373,25 @@ const showFinalResult = () => {
     message = `Você acertou ${score.value} de ${totalQuestions} perguntas!`;
   }
 
+  // Toca o som de vitória ou derrota
+  if (percentage >= 50) {
+    if (winGameSound) winGameSound.play();
+  } else {
+    if (loseGameSound) loseGameSound.play();
+  }
+
   Swal.fire({
     title: "Resultado Final",
+    imageUrl: percentage >= 50 ? "/assets/win.png" : "/assets/lost.jpg",
+    imageWidth: 400,
+    imageHeight: 400,
+    imageAlt: percentage >= 50 ? "Vitória" : "Derrota",
     text:
       percentage >= 50
         ? `Parabéns! ${message}`
-        : `Infelizmente você perdeu !  ${message}`,
-    icon: percentage >= 50 ? "success" : "error",
+        : `Infelizmente você perdeu! ${message} Tente novamente!`,
     confirmButtonText: "Jogar Novamente",
-  }).then(restartQuiz);
+  }).then(() => restartQuiz());
 };
 
 const restartQuiz = () => {
